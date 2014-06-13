@@ -1,0 +1,46 @@
+%p
+  %strong Title:
+  = @idea.title
+%p
+  %strong Description:
+  = @idea.description
+= link_to 'Edit', edit_idea_path(@idea)
+
+- if user_signed_in?
+
+  - if @idea.joins.exists?(user_id: current_user.id)
+    = link_to "<i class='glyphicon glyphicon-star'></i>".html_safe, [@idea, @join], class: "btn btn-default btn-sm", method: :delete
+  - else
+    = link_to "<i class='glyphicon glyphicon-star-empty'></i>".html_safe, [@idea, Join.new], class: "btn btn-default btn-sm", method: :post
+
+- if user_signed_in?
+  - if @idea.likes.exists?(user_id: current_user.id)
+    = link_to "<i class='glyphicon glyphicon-thumbs-up'></i>".html_safe, [@idea, @like], class: "btn btn-primary btn-sm", method: :delete
+  - else
+    = link_to "<i class='glyphicon glyphicon-thumbs-up'></i>".html_safe, [@idea, Like.new], class: "btn btn-default btn-sm", method: :post
+
+
+%hr
+
+%h2.sub-title Submit a Comment for this Idea
+
+= form_for [@idea, @comment] do |f|
+  = f.text_area :body
+  = f.submit
+
+%hr
+
+%h4 These users joined this idea:
+
+- @idea.comments.each do |comment|
+  = comment.body
+  %br
+
+
+- @idea.joins.each do |join|
+  %p= User.where(id: join.user_id).first.email
+ 
+   
+%br/
+
+ 
